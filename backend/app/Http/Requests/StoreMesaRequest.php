@@ -6,23 +6,17 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreMesaRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'numero_mesa' => 'required|string|unique:mesas,numero_mesa',
+            'capacidad' => 'required|integer|min:1',
+            'ubicacion' => 'nullable|string|max:255',
         ];
     }
 }

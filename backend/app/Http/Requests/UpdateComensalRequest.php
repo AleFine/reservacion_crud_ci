@@ -3,26 +3,28 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateComensalRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
+        $id = $this->route('comensal');
+
         return [
-            //
+            'nombre'    => 'sometimes|string|max:255',
+            'correo'    => [
+                'sometimes',
+                'email',
+                Rule::unique('comensales', 'correo')->ignore($id, 'id_comensal'),
+            ],
+            'telefono'  => 'nullable|string|max:20',
+            'direccion' => 'nullable|string|max:255',
         ];
     }
 }

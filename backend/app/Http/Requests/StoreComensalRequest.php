@@ -11,18 +11,16 @@ class StoreComensalRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            //
+            'nombre'    => 'required|string|max:255',
+            'correo'    => 'required|email|unique:comensales,correo',
+            'telefono'  => 'nullable|string|max:20',
+            'direccion' => 'nullable|string|max:255',
         ];
     }
 }
