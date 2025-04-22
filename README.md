@@ -62,7 +62,7 @@ Este comando iniciará los siguientes servicios (contenedores):
 # Entrar al contenedor de Composer para instalar dependencias
 docker-compose run --rm composer install
 
-# Copiar los archivos de variables de entorno
+# Para copiar los archivos de variables de entorno:
 
 # .env (laravel)
 copy .\backend\.env.example .\backend\.env
@@ -75,7 +75,7 @@ copy .\docker\mysql\.env.example .\docker\mysql\.env
 # el puerto 3306 de Mysql ocupado (si fuera el caso, tambien
 # edite el docker-compose.yml).
 
-# Ejecutar migraciones
+# Para ejecutar migraciones:
 docker-compose run --rm artisan migrate
 
 # (Opcional) Para poblar la base de datos con datos falsos.
