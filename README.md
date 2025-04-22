@@ -143,18 +143,22 @@ npm run lint
 ```
 backend/
 ├── app/
-│   ├── Http/Controllers/ # Controladores para comensales, mesas y reservas
-│   ├── Models/           # Modelos para comensales, mesas y reservas
-│   └── Resources/        # Recursos API para transformación de datos
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   └── Api/           # Controladores para comensales, mesas y reservas
+│   │   └── Requests/          # Form Requests para validaciones
+│   ├── Models/                # Modelos para comensales, mesas y reservas
+│   ├── Resources/             # API Resources para transformación de datos
 ├── database/
-│   ├── factories/       # Factories para crear datos falsos
-│   ├── migrations/      # Migraciones para crear las tablas
-│   └── seeders/         # Seeders para ejecutar los factories
+│   ├── factories/             # Factories para crear datos falsos
+│   ├── migrations/            # Migraciones para crear las tablas
+│   └── seeders/               # Seeders para poblar la base de datos
+├── routes/
+│   └── api.php                # Definición de rutas API
 ├── tests/
-│   ├── Feature/       # Gestión de Tests de características
-│   └── Unit/         # Gestión de Tests Unitarios 
-└── routes/
-    └── api.php          # Definición de rutas API
+    ├── Feature/               # Tests de caracteristicas/funcionalidades
+    └── Unit/                  # Tests unitarios
+
 ```
 
 ### Frontend (Vue.js + TypeScript)
@@ -165,8 +169,6 @@ frontend/
 │   ├── common/          # Componentes reutilizables (FilterPanel)   
 │   ├── mesas/           # Formulario (Modal) y Tabla para mesas.
 │   └── reservas/        # Formulario (Modal) y Tabla para reservas.
-├── composables/
-│   └── usePagination.ts  # Composable para manejar la paginación
 ├── requests/
 │   └── reservaRequest.ts # Objetos de request para asegurar su formato 
 ├── router/
