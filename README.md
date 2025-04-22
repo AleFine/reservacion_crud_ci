@@ -32,7 +32,7 @@ proceso ordenado de desarrollo se puede visualizar en la sección de Issues -> C
 > wsl --install
 > 
 
-## Instalación y Configuración (Se tienen que escribir todos los comandos en orden hasta el punto 4 para configurar correctamente el backend)
+## Instalación y Configuración (Se tienen que escribir todos los comandos en orden hasta el punto 3 para configurar correctamente el backend)
 
 ### 1. Clonar el repositorio
 
