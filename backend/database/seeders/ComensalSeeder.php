@@ -12,6 +12,6 @@ class ComensalSeeder extends Seeder
      */
     public function run(): void
     {
-        Comensal::factory()->count(50)->create();
+        Comensal::factory()->count(5)->create();
     }
 }

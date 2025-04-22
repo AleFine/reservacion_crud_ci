@@ -18,7 +18,7 @@ class ReservaSeeder extends Seeder
     {
         $comensales = Comensal::all();
         $mesas = Mesa::all();
-        $numeroDeReservas = 30;
+        $numeroDeReservas = 5;
         
         if ($comensales->count() > 0 && $mesas->count() > 0) {
             for ($i = 0; $i < $numeroDeReservas; $i++) {
