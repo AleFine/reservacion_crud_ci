@@ -99,6 +99,9 @@ npm install
 
 # Iniciar servidor de desarrollo
 npm run dev
+
+# (Opcional) Ejecutar linter de ESlint
+npm run lint
 ```
 
 ## Acceso a la Aplicación
