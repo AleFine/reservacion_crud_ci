@@ -8,15 +8,55 @@ use App\Models\Mesa;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreMesaRequest;
-use App\Http\Requests\UpdateMesaRequest;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Exception;
 
+/**
+ * @OA\Tag(
+ *     name="Mesas",
+ *     description="Gestión de mesas del restaurante"
+ * )
+ */
 class MesaController extends Controller
 {
-
+    /**
+     * @OA\Get(
+     *     path="/api/mesas",
+     *     tags={"Mesas"},
+     *     summary="Listar mesas paginadas",
+     *     operationId="getMesas",
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Items por página",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=15)
+     *     ),
+     *     @OA\Parameter(
+     *         name="searchTerm",
+     *         in="query",
+     *         description="Buscar por número o ubicación",
+     *         required=false,
+     *         @OA\Schema(type="string", example="Terraza")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de mesas",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/MesaResource")),
+     *             @OA\Property(property="links", ref="#/components/schemas/PaginationLinks"),
+     *             @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno",
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
     public function index(Request $request)
     {
         try {
@@ -41,10 +81,42 @@ class MesaController extends Controller
         }
     }
 
-    public function store(StoreMesaRequest $request)
+    /**
+     * @OA\Post(
+     *     path="/api/mesas",
+     *     tags={"Mesas"},
+     *     summary="Crear nueva mesa",
+     *     operationId="createMesa",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/MesaRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Mesa creada",
+     *         @OA\JsonContent(ref="#/components/schemas/MesaResource")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validación fallida",
+     *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=409,
+     *         description="Conflicto - Número de mesa duplicado",
+     *         @OA\JsonContent(ref="#/components/schemas/ConflictResponse")
+     *     )
+     * )
+     */
+    public function store(Request $request)
     {
         try {
-            $validated = $request->validated();
+            $validated = $request->validate([
+                'numero_mesa' => 'required|string|unique:mesas,numero_mesa',
+                'capacidad' => 'required|integer|min:1',
+                'ubicacion' => 'nullable|string|max:255'
+            ]);
+
             $mesa = Mesa::create($validated);
             
             return (new MesaResource($mesa))
@@ -77,6 +149,36 @@ class MesaController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/mesas/{id}",
+     *     tags={"Mesas"},
+     *     summary="Obtener mesa específica",
+     *     operationId="getMesa",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la mesa",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Detalles de la mesa",
+     *         @OA\JsonContent(ref="#/components/schemas/MesaResource")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No encontrada",
+     *         @OA\JsonContent(ref="#/components/schemas/NotFoundResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno",
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
     public function show($id)
     {
         try {
@@ -94,11 +196,56 @@ class MesaController extends Controller
         }
     }
 
-    public function update(UpdateMesaRequest $request, $id)
+    /**
+     * @OA\Put(
+     *     path="/api/mesas/{id}",
+     *     tags={"Mesas"},
+     *     summary="Actualizar mesa existente",
+     *     operationId="updateMesa",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la mesa",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/MesaRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Mesa actualizada",
+     *         @OA\JsonContent(ref="#/components/schemas/MesaResource")
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No encontrada",
+     *         @OA\JsonContent(ref="#/components/schemas/NotFoundResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=409,
+     *         description="Conflicto - Número de mesa duplicado",
+     *         @OA\JsonContent(ref="#/components/schemas/ConflictResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validación fallida",
+     *         @OA\JsonContent(ref="#/components/schemas/ValidationErrorResponse")
+     *     )
+     * )
+     */
+    public function update(Request $request, $id)
     {
         try {
             $mesa = Mesa::findOrFail($id);
-            $validated = $request->validated();
+            
+            $validated = $request->validate([
+                'numero_mesa' => 'sometimes|string|unique:mesas,numero_mesa,' . $mesa->id_mesa . ',id_mesa',
+                'capacidad' => 'sometimes|integer|min:1',
+                'ubicacion' => 'nullable|string|max:255'
+            ]);
+
             $mesa->update($validated);
             
             return new MesaResource($mesa);
@@ -133,6 +280,44 @@ class MesaController extends Controller
         }
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/api/mesas/{id}",
+     *     tags={"Mesas"},
+     *     summary="Eliminar mesa",
+     *     operationId="deleteMesa",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la mesa",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Mesa eliminada",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Mesa eliminada correctamente")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No encontrada",
+     *         @OA\JsonContent(ref="#/components/schemas/NotFoundResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=409,
+     *         description="Conflicto - Tiene reservas asociadas",
+     *         @OA\JsonContent(ref="#/components/schemas/ConflictResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno",
+     *         @OA\JsonContent(ref="#/components/schemas/ErrorResponse")
+     *     )
+     * )
+     */
     public function destroy($id)
     {
         try {
@@ -175,3 +360,4 @@ class MesaController extends Controller
         }
     }
 }
+
