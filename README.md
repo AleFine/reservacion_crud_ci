@@ -14,6 +14,8 @@ La aplicación está estructurada en tres componentes principales:
 - Backend API RESTful desarrollado en Laravel (incluye test unitarios)
 - Entorno de contenedores Docker para desarrollo y despliegue
 
+Para documentación se utilizó Swagger y estándar PHPDoc
+
 ## Requisitos Previos
 
 - [Docker](https://www.docker.com/get-started)  
