@@ -15,7 +15,7 @@ La aplicación está estructurada en tres componentes principales:
 - Entorno de contenedores Docker para desarrollo y despliegue
 
 Para documentación se utilizó Swagger y estándar PHPDoc, además el
-proceso ordenado de desarrollo se puede visualizar en la sección de Issues.
+proceso ordenado de desarrollo se puede visualizar en la sección de Issues -> Closed.
 
 ## Requisitos Previos
 
