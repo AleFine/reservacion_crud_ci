@@ -77,8 +77,12 @@ copy .\docker\mysql\.env.example .\docker\mysql\.env
 # Ejecutar migraciones
 docker-compose run --rm artisan migrate
 
-# Para poblar la base de datos con datos falsos.
+# (Opcional) Para poblar la base de datos con datos falsos.
 docker-compose run --rm artisan db:seed
+
+# (Opcional) Para ejecutar los test unitarios y test de características.
+docker-compose run --rm artisan test
+
 ```
 >Nota: Para ejecutar cualquier comando **artisan** o **composer** dentro del proyecto
 
