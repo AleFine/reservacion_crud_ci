@@ -10,8 +10,8 @@ Este proyecto implementa un sistema de reservas para restaurantes que permite:
 - Crear y gestionar reservas
 
 La aplicación está estructurada en tres componentes principales:
-- Frontend desarrollado en Vue.js, Vuetify y TypeScript
-- Backend API RESTful desarrollado en Laravel (incluye test unitarios)
+- Frontend desarrollado en Vue.js, Vuetify y TypeScript (incluye test unitarios)
+- Backend API RESTful desarrollado en Laravel (incluye test unitarios y test de características)
 - Entorno de contenedores Docker para desarrollo y despliegue
 
 Para documentación se utilizó Swagger y estándar PHPDoc, además el
@@ -103,6 +103,10 @@ npm run dev
 
 # (Opcional) Ejecutar linter de ESlint
 npm run lint
+
+# (Opcional) Ejecutar pruebas unitarias Vitetest
+npm run test
+
 ```
 
 ## Acceso a la Aplicación
@@ -122,6 +126,7 @@ npm run lint
 - Vite como bundler y servidor de desarrollo
 - Patrón de servicios para comunicación con API
 - ESLint como linter para detección de errores
+- Vitest para integrar pruebas unitarias.
 
 ### Backend
 - Laravel 12
