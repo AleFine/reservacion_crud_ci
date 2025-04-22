@@ -98,7 +98,7 @@ npm run dev
 ## Acceso a la Aplicación
 
 - **Frontend**: Acceda a la aplicación en [http://localhost:5173](http://localhost:5173) (por defecto)
-- **Documentación de la API**: Detalles sobre los API endpoints disponibles en [http://localhost:8080/api/documentation](http://localhost:8080/api/documentation)
+- **Documentación de la API (Swagger)**: Detalles sobre los API endpoints disponibles en [http://localhost:8080/api/documentation](http://localhost:8080/api/documentation)
 - **phpMyAdmin**: Gestión de base de datos en [http://localhost:8090](http://localhost:8090)
 
 ## Tecnologías Utilizadas
