@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    name: Pruebas Backend y Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout de código
+        uses: actions/checkout@v3
+
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Levantar servicios con Docker Compose
+        run: |
+          docker-compose up -d --build
+
+      - name: Esperar MySQL
+        run: |
+          docker-compose exec php bash -lc "until mysqladmin ping -h mysql --silent; do sleep 2; done"
+
+      - name: "Backend: Instalar deps y migrar"
+        run: |
+          docker-compose exec php bash -lc "cp .env.example .env && composer install --no-interaction --prefer-dist --optimize-autoloader && php artisan key:generate --ansi && php artisan migrate --force"
+
+      - name: "Backend: Ejecutar PHPUnit"
+        run: |
+          docker-compose exec php bash -lc "vendor/bin/phpunit --fail-on-risky --stop-on-failure"
+
+      - name: "Frontend: Instalar deps y pruebas"
+        run: |
+          cd frontend
+          npm ci
+          npm test
+          npm run build
+
+      - name: Apagar y limpiar Docker
+        if: always()
+        run: |
+          docker-compose down --volumes
