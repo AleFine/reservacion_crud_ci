@@ -14,7 +14,8 @@ La aplicación está estructurada en tres componentes principales:
 - Backend API RESTful desarrollado en Laravel (incluye test unitarios)
 - Entorno de contenedores Docker para desarrollo y despliegue
 
-Para documentación se utilizó Swagger y estándar PHPDoc
+Para documentación se utilizó Swagger y estándar PHPDoc, además el
+proceso ordenado de desarrollo se puede visualizar en la sección de Issues -> Closed.
 
 ## Requisitos Previos
 
@@ -99,6 +100,9 @@ npm install
 
 # Iniciar servidor de desarrollo
 npm run dev
+
+# (Opcional) Ejecutar linter de ESlint
+npm run lint
 ```
 
 ## Acceso a la Aplicación
