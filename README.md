@@ -59,7 +59,7 @@ Este comando iniciará los siguientes servicios (contenedores):
 ### 3. Configurar el Backend (Laravel)
 
 ```bash
-# Entrar al contenedor de Composer para instalar dependencias
+# Para entrar al contenedor de Composer para instalar dependencias:
 docker-compose run --rm composer install
 
 # Para copiar los archivos de variables de entorno:
