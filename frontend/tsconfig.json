@@ -5,7 +5,10 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "strict": true,
-    "types": ["vuetify"],
-  },
+    "types": ["vuetify", "vitest/globals", "@vue/test-utils", "node"]
+  }
 }
