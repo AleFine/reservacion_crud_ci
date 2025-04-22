@@ -16,7 +16,17 @@ use Exception;
 
 class ComensalController extends Controller
 {
-
+    /**
+     * Obtiene una lista paginada de comensales con opción de búsqueda
+     * 
+     * @param Request $request Solicitud HTTP
+     * @return \Illuminate\Http\JsonResponse|ComensalResource
+     * 
+     * @throws \Exception Error genérico (500)
+     * 
+     * @queryParam per_page integer Cantidad de elementos por página. Ejemplo: 15
+     * @queryParam searchTerm string Término para buscar en nombre, correo o teléfono. Ejemplo: "Juan"
+     */
     public function index(Request $request)
     {
         try {
@@ -42,7 +52,21 @@ class ComensalController extends Controller
         }
     }
 
-
+    /**
+     * Crea un nuevo comensal en el sistema
+     * 
+     * @param Request $request Solicitud HTTP con datos del comensal
+     * @return \Illuminate\Http\JsonResponse|ComensalResource
+     * 
+     * @throws ValidationException Validación fallida (422)
+     * @throws QueryException Error de base de datos (500 o 409)
+     * @throws \Exception Error genérico (500)
+     * 
+     * @bodyParam nombre string required Nombre del comensal. Ejemplo: "Juan Pérez"
+     * @bodyParam correo string required Email único. Ejemplo: "juan@example.com"
+     * @bodyParam telefono string nullable Teléfono. Ejemplo: "+5491123456789"
+     * @bodyParam direccion string nullable Dirección. Ejemplo: "Calle Falsa 123"
+     */
     public function store(StoreComensalRequest $request)
     {
         try {
@@ -80,6 +104,15 @@ class ComensalController extends Controller
         }
     }
 
+    /**
+     * Muestra los detalles de un comensal específico
+     * 
+     * @param int $id ID único del comensal
+     * @return \Illuminate\Http\JsonResponse|ComensalResource
+     * 
+     * @throws ModelNotFoundException Comensal no encontrado (404)
+     * @throws \Exception Error genérico (500)
+     */
     public function show($id)
     {
         try {
@@ -98,6 +131,23 @@ class ComensalController extends Controller
         }
     }
 
+    /**
+     * Actualiza los datos de un comensal existente
+     * 
+     * @param Request $request Solicitud HTTP con datos a actualizar
+     * @param int $id ID único del comensal a actualizar
+     * @return \Illuminate\Http\JsonResponse|ComensalResource
+     * 
+     * @throws ModelNotFoundException Comensal no encontrado (404)
+     * @throws ValidationException Validación fallida (422)
+     * @throws QueryException Error de base de datos (500 o 409)
+     * @throws \Exception Error genérico (500)
+     * 
+     * @bodyParam nombre string Nombre del comensal. Ejemplo: "Juan Pérez Actualizado"
+     * @bodyParam correo string Email único (ignorando el actual). Ejemplo: "nuevo@email.com"
+     * @bodyParam telefono string Teléfono. Ejemplo: "+5491187654321"
+     * @bodyParam direccion string Dirección. Ejemplo: "Nueva Dirección 456"
+     */
     public function update(UpdateComensalRequest $request, $id)
     {
         try {
@@ -138,6 +188,15 @@ class ComensalController extends Controller
         }
     }
 
+    /**
+     * Elimina un comensal del sistema
+     * 
+     * @param int $id ID único del comensal a eliminar
+     * @return \Illuminate\Http\JsonResponse
+     * 
+     * @throws ModelNotFoundException Comensal no encontrado (404)
+     * @throws \Exception Error genérico (500) o conflicto con reservas (409)
+     */
     public function destroy($id)
     {
         try {

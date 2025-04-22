@@ -111,6 +111,50 @@ class ReservaController extends Controller
         }
     }
 
+    /**
+     * Muestra detalles de una reserva específica
+     * 
+     * @param int $id ID único de la reserva
+     * @return \Illuminate\Http\JsonResponse|ReservaResource
+     * 
+     * @throws ModelNotFoundException Reserva no encontrada (404)
+     * @throws \Exception Error genérico (500)
+     */
+    public function show($id)
+    {
+        try {
+            $reserva = Reserva::with(['comensal', 'mesa'])->findOrFail($id);
+            return new ReservaResource($reserva);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Reserva no encontrada'
+            ], Response::HTTP_NOT_FOUND);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener la reserva',
+                'error' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Actualiza una reserva existente
+     * 
+     * @param Request $request Solicitud HTTP con datos a actualizar
+     * @param int $id ID único de la reserva
+     * @return \Illuminate\Http\JsonResponse|ReservaResource
+     * 
+     * @throws ModelNotFoundException Reserva no encontrada (404)
+     * @throws ValidationException Validación fallida (422)
+     * @throws QueryException Error de base de datos (409 o 500)
+     * @throws \Exception Error genérico (500)
+     * 
+     * @bodyParam fecha date Fecha futura (formato Y-m-d). Ejemplo: "2024-03-16"
+     * @bodyParam hora time Hora (formato H:i:s). Ejemplo: "20:30:00"
+     * @bodyParam numero_de_personas integer Mínimo 1. Ejemplo: 5
+     * @bodyParam id_comensal integer ID de comensal existente. Ejemplo: 2
+     * @bodyParam id_mesa integer ID de mesa existente. Ejemplo: 6
+     */
     public function update(UpdateReservaRequest $request, $id)
     {
         try {
@@ -175,6 +219,15 @@ class ReservaController extends Controller
         }
     }
 
+    /**
+     * Elimina una reserva
+     * 
+     * @param int $id ID único de la reserva
+     * @return \Illuminate\Http\JsonResponse
+     * 
+     * @throws ModelNotFoundException Reserva no encontrada (404)
+     * @throws \Exception Error genérico (500)
+     */
     public function destroy($id)
     {
         try {

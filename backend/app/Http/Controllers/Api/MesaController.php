@@ -17,6 +17,17 @@ use Exception;
 class MesaController extends Controller
 {
 
+    /**
+     * Obtiene una lista paginada de mesas con búsqueda
+     * 
+     * @param Request $request Solicitud HTTP
+     * @return \Illuminate\Http\JsonResponse|MesaResource
+     * 
+     * @throws \Exception Error genérico (500)
+     * 
+     * @queryParam per_page integer Cantidad de elementos por página. Ejemplo: 15
+     * @queryParam searchTerm string Buscar en número de mesa o ubicación. Ejemplo: "terraza"
+     */
     public function index(Request $request)
     {
         try {
@@ -41,6 +52,20 @@ class MesaController extends Controller
         }
     }
 
+    /**
+     * Crea una nueva mesa en el sistema
+     * 
+     * @param Request $request Solicitud HTTP con datos de la mesa
+     * @return \Illuminate\Http\JsonResponse|MesaResource
+     * 
+     * @throws ValidationException Validación fallida (422)
+     * @throws QueryException Error de base de datos (409 o 500)
+     * @throws \Exception Error genérico (500)
+     * 
+     * @bodyParam numero_mesa string required Número único de mesa. Ejemplo: "MESA-01"
+     * @bodyParam capacidad integer required Capacidad mínima 1. Ejemplo: 4
+     * @bodyParam ubicacion string nullable Ubicación de la mesa. Ejemplo: "Terraza"
+     */
     public function store(StoreMesaRequest $request)
     {
         try {
@@ -77,6 +102,15 @@ class MesaController extends Controller
         }
     }
 
+    /**
+     * Muestra los detalles de una mesa específica
+     * 
+     * @param int $id ID único de la mesa
+     * @return \Illuminate\Http\JsonResponse|MesaResource
+     * 
+     * @throws ModelNotFoundException Mesa no encontrada (404)
+     * @throws \Exception Error genérico (500)
+     */
     public function show($id)
     {
         try {
@@ -94,6 +128,22 @@ class MesaController extends Controller
         }
     }
 
+    /**
+     * Actualiza los datos de una mesa existente
+     * 
+     * @param Request $request Solicitud HTTP con datos a actualizar
+     * @param int $id ID único de la mesa a actualizar
+     * @return \Illuminate\Http\JsonResponse|MesaResource
+     * 
+     * @throws ModelNotFoundException Mesa no encontrada (404)
+     * @throws ValidationException Validación fallida (422)
+     * @throws QueryException Error de base de datos (409 o 500)
+     * @throws \Exception Error genérico (500)
+     * 
+     * @bodyParam numero_mesa string Número único de mesa (ignorando actual). Ejemplo: "MESA-02"
+     * @bodyParam capacidad integer Capacidad mínima 1. Ejemplo: 6
+     * @bodyParam ubicacion string Ubicación de la mesa. Ejemplo: "Interior"
+     */
     public function update(UpdateMesaRequest $request, $id)
     {
         try {
@@ -133,6 +183,17 @@ class MesaController extends Controller
         }
     }
 
+
+    /**
+     * Elimina una mesa del sistema
+     * 
+     * @param int $id ID único de la mesa a eliminar
+     * @return \Illuminate\Http\JsonResponse
+     * 
+     * @throws ModelNotFoundException Mesa no encontrada (404)
+     * @throws QueryException Error de integridad por reservas (409)
+     * @throws \Exception Error genérico (500)
+     */
     public function destroy($id)
     {
         try {
