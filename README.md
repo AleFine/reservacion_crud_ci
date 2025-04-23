@@ -311,7 +311,6 @@ npm run lint
 1. Los componentes se organizan por entidad (comensales, mesas, reservas)
 2. Los servicios manejan la comunicación con la API backend
 3. Los stores (Pinia) gestionan el estado global de la aplicación
-4. El composable `usePagination` facilita la implementación de paginación en listados
 
 ### Backend
 1. Los controladores gestionan las peticiones HTTP
