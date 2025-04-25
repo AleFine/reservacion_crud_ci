@@ -360,6 +360,6 @@ npm run type-check
 
 ## 📞 Contacto
 
-- 🔗 [LinkedIn](www.linkedin.com/in/kevin-e-parimango-gómez-832315174)  
+- LinkedIn: www.linkedin.com/in/kevin-e-parimango-gómez-832315174 
 - 📱 +51 929686486  
 - ✉️ keving.kpg@gmail.com
