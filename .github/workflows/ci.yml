@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
 
 jobs:
@@ -12,8 +12,30 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        
-      # GitHub Actions runners already include Docker and Docker Compose V2
+
+      - name: Prepare environment files
+        run: |
+          if [ ! -f "./backend/.env.example" ]; then
+            echo "Creating default .env.example file"
+            cat > ./backend/.env.example << EOL
+            APP_NAME=Laravel
+            APP_ENV=testing
+            APP_KEY=
+            APP_DEBUG=true
+            APP_URL=http://localhost
+
+            DB_CONNECTION=mysql
+            DB_HOST=mysql
+            DB_PORT=3306
+            DB_DATABASE=restaurant_app
+            DB_USERNAME=user1
+            DB_PASSWORD=user1.pa55
+            EOL
+          fi
+          cp ./backend/.env.example ./backend/.env
+          echo "Environment files prepared"
+          ls -la ./backend/
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -21,10 +43,16 @@ jobs:
         run: |
           docker compose build
           docker compose up -d
-          
+
+      - name: Display running containers
+        run: docker compose ps
+
+      - name: Check volume mounts and files
+        run: |
+          docker compose exec -T php sh -c "ls -la /var/www/html"
+
       - name: Wait for services to be ready
         run: |
-          # Wait for MySQL to be ready
           echo "Waiting for MySQL to be ready..."
           timeout=60
           until docker compose exec -T mysql mysqladmin ping -h localhost -u root -proot.pa55 --silent || [ $timeout -eq 0 ]; do
@@ -32,26 +60,17 @@ jobs:
             sleep 5
             timeout=$((timeout-5))
           done
-          
+
           if [ $timeout -eq 0 ]; then
             echo "MySQL failed to start in time"
             docker compose logs mysql
             exit 1
           fi
-          
+
           echo "MySQL is ready!"
 
       - name: Set up Backend
         run: |
-          # Copy backend/.env.example to the container if it exists
-          if [ -f "./backend/.env.example" ]; then
-            docker compose exec -T php sh -c "cat > /var/www/html/.env.example" < ./backend/.env.example
-            docker compose exec -T php sh -c "cp .env.example .env"
-          else
-            # Create a basic .env file if .env.example doesn't exist
-            docker compose exec -T php sh -c "echo 'APP_KEY=' > /var/www/html/.env"
-          fi
-          
           docker compose exec -T php sh -c "composer install --no-interaction --prefer-dist --optimize-autoloader"
           docker compose exec -T php sh -c "php artisan key:generate --ansi"
           docker compose exec -T php sh -c "php artisan migrate --force"
