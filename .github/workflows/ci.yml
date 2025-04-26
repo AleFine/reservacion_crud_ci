@@ -7,39 +7,43 @@ on:
 
 jobs:
   test:
-    name: Pruebas Backend y Frontend
+    name: Backend and Frontend Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout de código
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Configurar Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Levantar servicios con Docker Compose
+      - name: Build and start services
         run: |
-          docker-compose up -d --build
+          docker-compose build
+          docker-compose up -d
 
-      - name: Esperar MySQL
+      - name: Wait for MySQL
         run: |
-          docker-compose exec php bash -lc "until mysqladmin ping -h mysql --silent; do sleep 2; done"
+          docker-compose exec -T php sh -c "until mysqladmin ping -h mysql --silent; do echo 'Waiting for MySQL...' && sleep 2; done"
 
-      - name: "Backend: Instalar deps y migrar"
+      - name: Set up Backend
         run: |
-          docker-compose exec php bash -lc "cp .env.example .env && composer install --no-interaction --prefer-dist --optimize-autoloader && php artisan key:generate --ansi && php artisan migrate --force"
+          docker-compose exec -T php sh -c "cp -n .env.example .env || true"
+          docker-compose exec -T php sh -c "composer install --no-interaction --prefer-dist --optimize-autoloader"
+          docker-compose exec -T php sh -c "php artisan key:generate --ansi"
+          docker-compose exec -T php sh -c "php artisan migrate --force"
 
-      - name: "Backend: Ejecutar PHPUnit"
+      - name: Run Backend Tests
         run: |
-          docker-compose exec php bash -lc "vendor/bin/phpunit --fail-on-risky --stop-on-failure"
+          docker-compose exec -T php sh -c "vendor/bin/phpunit --fail-on-risky --stop-on-failure"
 
-      - name: "Frontend: Instalar deps y pruebas"
+      - name: Set up and test Frontend
         run: |
           cd frontend
           npm ci
           npm test
           npm run build
 
-      - name: Apagar y limpiar Docker
+      - name: Cleanup Docker
         if: always()
         run: |
           docker-compose down --volumes
