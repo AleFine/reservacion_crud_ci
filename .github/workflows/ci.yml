@@ -12,29 +12,45 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
+        
+      # GitHub Actions runners already include Docker and Docker Compose V2
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
       - name: Build and start services
         run: |
-          docker-compose build
-          docker-compose up -d
-
-      - name: Wait for MySQL
+          docker compose build
+          docker compose up -d
+          
+      - name: Wait for services to be ready
         run: |
-          docker-compose exec -T php sh -c "until mysqladmin ping -h mysql --silent; do echo 'Waiting for MySQL...' && sleep 2; done"
+          # Wait for MySQL to be ready
+          echo "Waiting for MySQL to be ready..."
+          timeout=60
+          until docker compose exec -T mysql mysqladmin ping -h localhost -u root -proot.pa55 --silent || [ $timeout -eq 0 ]; do
+            echo "Waiting for MySQL... ($timeout seconds left)"
+            sleep 5
+            timeout=$((timeout-5))
+          done
+          
+          if [ $timeout -eq 0 ]; then
+            echo "MySQL failed to start in time"
+            docker compose logs mysql
+            exit 1
+          fi
+          
+          echo "MySQL is ready!"
 
       - name: Set up Backend
         run: |
-          docker-compose exec -T php sh -c "cp -n .env.example .env || true"
-          docker-compose exec -T php sh -c "composer install --no-interaction --prefer-dist --optimize-autoloader"
-          docker-compose exec -T php sh -c "php artisan key:generate --ansi"
-          docker-compose exec -T php sh -c "php artisan migrate --force"
+          docker compose exec -T php sh -c "cp -n .env.example .env || true"
+          docker compose exec -T php sh -c "composer install --no-interaction --prefer-dist --optimize-autoloader"
+          docker compose exec -T php sh -c "php artisan key:generate --ansi"
+          docker compose exec -T php sh -c "php artisan migrate --force"
 
       - name: Run Backend Tests
         run: |
-          docker-compose exec -T php sh -c "vendor/bin/phpunit --fail-on-risky --stop-on-failure"
+          docker compose exec -T php sh -c "vendor/bin/phpunit --fail-on-risky --stop-on-failure"
 
       - name: Set up and test Frontend
         run: |
@@ -46,4 +62,4 @@ jobs:
       - name: Cleanup Docker
         if: always()
         run: |
-          docker-compose down --volumes
+          docker compose down --volumes
