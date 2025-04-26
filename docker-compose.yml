@@ -27,6 +27,7 @@ services:
     container_name: APP
     volumes:
       - ./backend:/var/www/html
+      - ./.env.example:/var/www/html/.env.example:ro
     environment:
       - PHP_FPM_USER=laravel
       - PHP_FPM_GROUP=laravel
