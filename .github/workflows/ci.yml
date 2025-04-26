@@ -39,6 +39,45 @@ jobs:
           echo "Environment files prepared"
           ls -la ./backend/
 
+      - name: Create scripts directory
+        run: |
+          mkdir -p ./docker/scripts
+          
+      - name: Create Docker entrypoint script
+        run: |
+          cat > ./docker/scripts/docker-entrypoint.sh << 'EOF'
+          #!/bin/sh
+          set -e
+
+          # Ensure critical directories exist with proper permissions
+          echo "Setting up directory permissions..."
+
+          # Use sudo to ensure we have the permissions to create directories
+          sudo mkdir -p /var/www/html/vendor
+          sudo mkdir -p /var/www/html/storage/logs
+          sudo mkdir -p /var/www/html/storage/framework/cache
+          sudo mkdir -p /var/www/html/storage/framework/sessions
+          sudo mkdir -p /var/www/html/storage/framework/views
+          sudo mkdir -p /var/www/html/bootstrap/cache
+
+          # Set proper permissions
+          sudo chmod -R 777 /var/www/html/storage
+          sudo chmod -R 777 /var/www/html/bootstrap/cache
+          sudo chmod -R 777 /var/www/html/vendor
+          sudo chmod -R 777 /.composer
+
+          # Ensure correct ownership
+          sudo chown -R laravel:laravel /var/www/html
+          sudo chown -R laravel:laravel /.composer
+
+          echo "Directory permissions set up completed"
+
+          # Execute the passed command
+          exec "$@"
+          EOF
+          chmod +x ./docker/scripts/docker-entrypoint.sh
+          ls -la ./docker/scripts/
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -75,18 +114,21 @@ jobs:
 
       - name: Set up Backend
         run: |
+          # Fix permissions in container before composer install
+          docker compose exec -T php sudo chmod -R 777 /var/www/html
+          
           # Run composer install
-          docker compose exec -T php sh -c "composer install --no-interaction --prefer-dist --optimize-autoloader"
+          docker compose exec -T php composer install --no-interaction --prefer-dist --optimize-autoloader
           
           # Generate application key
-          docker compose exec -T php sh -c "php artisan key:generate --ansi"
+          docker compose exec -T php php artisan key:generate --ansi
           
           # Run migrations
-          docker compose exec -T php sh -c "php artisan migrate --force"
+          docker compose exec -T php php artisan migrate --force
 
       - name: Run Backend Tests
         run: |
-          docker compose exec -T php sh -c "vendor/bin/phpunit --fail-on-risky --stop-on-failure"
+          docker compose exec -T php vendor/bin/phpunit --fail-on-risky --stop-on-failure
 
       - name: Set up and test Frontend
         run: |
