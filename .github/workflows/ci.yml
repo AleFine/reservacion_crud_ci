@@ -15,27 +15,27 @@ jobs:
 
       - name: Prepare environment files
         run: |
+          # Create .env.example file directly without heredoc
           if [ ! -f "./backend/.env.example" ]; then
             echo "Creating default .env.example file"
-            cat > ./backend/.env.example << 'ENVFILE'
-            APP_NAME=Laravel
-            APP_ENV=testing
-            APP_KEY=
-            APP_DEBUG=true
-            APP_URL=http://localhost
-
-            DB_CONNECTION=mysql
-            DB_HOST=mysql
-            DB_PORT=3306
-            DB_DATABASE=restaurant_app
-            DB_USERNAME=user1
-            DB_PASSWORD=user1.pa55
-            ENVFILE
+            echo "APP_NAME=Laravel" > ./backend/.env.example
+            echo "APP_ENV=testing" >> ./backend/.env.example
+            echo "APP_KEY=" >> ./backend/.env.example
+            echo "APP_DEBUG=true" >> ./backend/.env.example
+            echo "APP_URL=http://localhost" >> ./backend/.env.example
+            echo "" >> ./backend/.env.example
+            echo "DB_CONNECTION=mysql" >> ./backend/.env.example
+            echo "DB_HOST=mysql" >> ./backend/.env.example
+            echo "DB_PORT=3306" >> ./backend/.env.example
+            echo "DB_DATABASE=restaurant_app" >> ./backend/.env.example
+            echo "DB_USERNAME=user1" >> ./backend/.env.example
+            echo "DB_PASSWORD=user1.pa55" >> ./backend/.env.example
           fi
           
           # Create a copy of .env.example as .env
           cp ./backend/.env.example ./backend/.env
           
+          # Show created files
           echo "Environment files prepared"
           ls -la ./backend/
 
