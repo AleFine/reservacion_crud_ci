@@ -43,7 +43,15 @@ jobs:
 
       - name: Set up Backend
         run: |
-          docker compose exec -T php sh -c "cp -n .env.example .env || true"
+          # Copy backend/.env.example to the container if it exists
+          if [ -f "./backend/.env.example" ]; then
+            docker compose exec -T php sh -c "cat > /var/www/html/.env.example" < ./backend/.env.example
+            docker compose exec -T php sh -c "cp .env.example .env"
+          else
+            # Create a basic .env file if .env.example doesn't exist
+            docker compose exec -T php sh -c "echo 'APP_KEY=' > /var/www/html/.env"
+          fi
+          
           docker compose exec -T php sh -c "composer install --no-interaction --prefer-dist --optimize-autoloader"
           docker compose exec -T php sh -c "php artisan key:generate --ansi"
           docker compose exec -T php sh -c "php artisan migrate --force"
