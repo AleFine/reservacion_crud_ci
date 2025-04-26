@@ -37,6 +37,10 @@ services:
       - PHP_FPM_GROUP=laravel
     networks:
       - app_network
+    # Make sure container doesn't exit
+    tty: true
+    # Use root user for GitHub Actions environment
+    user: root
 
   mysql:
     image: mysql:8.0.42
