@@ -78,7 +78,7 @@ class MesaTest extends TestCase
         $mesa = Mesa::factory()->create();
 
         $updateData = [
-            'numero_mesa' => 'M2',
+            'numero_mesa' => 'MESA-UNIQUE-' . uniqid(),  // Generate a unique ID
             'capacidad' => 6
         ];
 
